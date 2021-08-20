@@ -11,3 +11,21 @@ type Ticket struct{
 	Status int
 	Note string
 }
+
+func init(){
+	db.AutoMigrate(&Ticket{})
+}
+func (t *Ticket) CreateTicket() *Ticket{
+	return nil
+}
+
+func GetTicket(ID int) *Ticket{
+	return nil
+}
+
+func GetAllTickets() []Ticket{
+	return nil
+}
+func DeleteTicket(ID int) Ticket{
+	return Ticket{}
+}

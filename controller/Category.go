@@ -1,7 +1,8 @@
 package controller
 
-import "net/http"
-
+import (
+	"net/http"
+)
 
 func ViewCategory(w http.ResponseWriter, r *http.Request){
 
@@ -13,7 +14,11 @@ func CreateCategory(w http.ResponseWriter, r *http.Request){
 	w.Write([]byte("create category\n"))
 }
 
+func GetAllBooks(w http.ResponseWriter, r *http.Request){
+	w.Write([]byte("all books \n"))
+}
 func UpdateCategory(w http.ResponseWriter, r *http.Request){
+
 	w.Write([]byte("update category"))
 }
 

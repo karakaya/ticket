@@ -6,11 +6,12 @@ import (
 )
 
 func User(r *mux.Router){
-	t:= r.PathPrefix("/user").Subrouter()
-	t.HandleFunc("/",controller.CreateUser).Methods("POST")
-	t.HandleFunc("/{id}",controller.ViewUser).Methods("GET")
-	t.HandleFunc("/{id}",controller.UpdateUser).Methods("PATCH")
-	t.HandleFunc("/{id}",controller.DeleteUser).Methods("DELETE")
+	u:= r.PathPrefix("/user").Subrouter()
+	u.HandleFunc("/",controller.CreateUser).Methods("POST")
+	u.HandleFunc("/",controller.GetAllUsers).Methods("GET")
+	u.HandleFunc("/{id}",controller.ViewUser).Methods("GET")
+	u.HandleFunc("/{id}",controller.UpdateUser).Methods("PATCH")
+	u.HandleFunc("/{id}",controller.DeleteUser).Methods("DELETE")
 }
 
 
