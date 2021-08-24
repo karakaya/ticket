@@ -13,7 +13,7 @@ type Ticket struct{
 }
 
 func init(){
-	db.AutoMigrate(&Ticket{})
+//	db.AutoMigrate(&Ticket{})
 }
 func (t *Ticket) CreateTicket() *Ticket{
 	return nil

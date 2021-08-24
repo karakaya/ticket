@@ -6,12 +6,12 @@ import (
 )
 
 func Category(r *mux.Router){
-	t:= r.PathPrefix("/ticket").Subrouter()
-	t.HandleFunc("/",controller.CreateCategory).Methods("POST")
-	t.HandleFunc("/",controller.GetAllBooks).Methods("GET")
-	t.HandleFunc("/{id}",controller.ViewCategory).Methods("GET")
-	t.HandleFunc("/{id}",controller.UpdateCategory).Methods("PATCH")
-	t.HandleFunc("/{id}",controller.DeleteCategory).Methods("DELETE")
+	c:= r.PathPrefix("/category").Subrouter()
+	c.HandleFunc("/",controller.CreateCategory).Methods("POST")
+	c.HandleFunc("/",controller.GetAllCategories).Methods("GET")
+	c.HandleFunc("/{id}",controller.ViewCategory).Methods("GET")
+	c.HandleFunc("/{id}",controller.UpdateCategory).Methods("PATCH")
+	c.HandleFunc("/{id}",controller.DeleteCategory).Methods("DELETE")
 
 
 }

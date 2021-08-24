@@ -1,28 +1,55 @@
 package controller
 
 import (
+	"encoding/json"
+	"github.com/gorilla/mux"
 	"net/http"
+	"ticket/models"
 )
 
 func ViewCategory(w http.ResponseWriter, r *http.Request){
 
-	w.Write([]byte("here is your category"))
+	id,err := mux.Vars(r)["id"];if !err{
+		panic(err)
+	}
+	category:=models.GetCategory(id)
+
+	res,_ := json.Marshal(category)
+	w.WriteHeader(http.StatusOK)
+	w.Write(res)
 }
 
 func CreateCategory(w http.ResponseWriter, r *http.Request){
+	 category := models.Category{
+	 	Title: r.FormValue("title"),
+	 }
+	 category.CreateCategory()
 
-	w.Write([]byte("create category\n"))
 }
 
-func GetAllBooks(w http.ResponseWriter, r *http.Request){
-	w.Write([]byte("all books \n"))
+func GetAllCategories(w http.ResponseWriter, r *http.Request){
+	categories := models.GetAllCategories()
+	allCategories,_ := json.Marshal(categories)
+	w.WriteHeader(200)
+	w.Write(allCategories)
 }
 func UpdateCategory(w http.ResponseWriter, r *http.Request){
+	category := models.Category{Title: r.FormValue("title")}
+	id := mux.Vars(r)["id"]
+	update :=category.UpdateCategory(ConvertInt(id))
 
-	w.Write([]byte("update category"))
+	res,_ := json.Marshal(update)
+	w.WriteHeader(http.StatusOK)
+	w.Write(res)
 }
 
 func DeleteCategory(w http.ResponseWriter, r *http.Request){
 
-	w.Write([]byte("destroy category"))
+	delete := models.DeleteCategory(ConvertInt(mux.Vars(r)["id"]))
+	if delete == false{
+		w.Write([]byte("record not found or failed to delete"))
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("record deleted successfully"))
 }
