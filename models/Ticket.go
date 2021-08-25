@@ -1,31 +1,57 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"fmt"
+	"gorm.io/gorm"
+	"ticket/config"
+)
 
 type Ticket struct{
 	gorm.Model
 	Subject string
 	Description string
 	Priority string
-	Category Category `gorm:"foreignKey:ID;References:ID;"`
+	//CategoryID Category `gorm:"foreignKey:ID;References:ID;"`
+	CategoryID int
+	UserID int `gorm:"foreignKey:id"`
 	Status int
 	Note string
 }
+func ViewTicket(ID int) *Ticket{
+	var ticket Ticket
+	config.DB.First(Ticket{},ID).Scan(&ticket)
+	return &ticket
+}
 
-func init(){
-//	db.AutoMigrate(&Ticket{})
+func (t *Ticket) UpdateTicket(id int) *Ticket{
+	var currTicket Ticket
+	config.DB.First(&currTicket,id)
+	currTicket.Subject = t.Subject
+	currTicket.Description = t.Description
+	currTicket.CategoryID = t.CategoryID
+	currTicket.Note = t.Note
+	currTicket.Status = t.Status
+	config.DB.Save(&currTicket)
+	fmt.Println(currTicket)
+	return nil
 }
 func (t *Ticket) CreateTicket() *Ticket{
-	return nil
-}
+	ticket :=&Ticket{
+		Subject: t.Subject,
+		Description: t.Description,
+		CategoryID: t.CategoryID,
+		UserID: t.UserID,
 
-func GetTicket(ID int) *Ticket{
-	return nil
+	}
+	config.DB.Create(ticket)
+	return ticket
 }
 
 func GetAllTickets() []Ticket{
-	return nil
+	var ticket []Ticket
+	config.DB.Find(&ticket)
+	return ticket
 }
-func DeleteTicket(ID int) Ticket{
+func DeleteTicket() Ticket{
 	return Ticket{}
 }

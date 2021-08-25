@@ -13,10 +13,12 @@ type User struct{
 	Name string
 	Email string
 	Password string
-	Tickets []Ticket `gorm:"many2many:user_tickets"`
-	IsAdmin bool     `gorm:"default:false"`
+	IsAdmin bool `gorm:"default:false"`
 }
-
+func (u *User)	AfterFind(tx *gorm.DB) (err error){
+	u.Password = "secret"
+	return
+}
 
 func  CreateUser(r *http.Request) *User{
 	user:=&User{
