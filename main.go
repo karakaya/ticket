@@ -10,11 +10,8 @@ import (
 
 func main() {
 	config.ConnectDB()
-	r := mux.NewRouter().StrictSlash(true)
-
-
-
 	config.DB.AutoMigrate(&models.User{},&models.Ticket{},&models.Category{})
+	r := mux.NewRouter().StrictSlash(true)
 
 
 	route.Ticket(r)
