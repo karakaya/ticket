@@ -39,8 +39,7 @@ Endpoint|Method|Function
 - [ ] Middleware
 - [ ] Recover from soft-delete
 - [ ] .env file
-- [ ] Easy migration
-- [ ] Easy insert with validation rules 
-- [ ] CSRF Protection
+
+- [ ] Easy insert with validation rules
 - [ ] Dockerfile
 - [ ] Basic front-end for demo

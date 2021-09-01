@@ -1,19 +1,18 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
 	"net/http"
 	"ticket/config"
-	"ticket/models"
 	"ticket/route"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
 	config.ConnectDB()
-	config.DB.AutoMigrate(&models.User{},&models.Ticket{},&models.Category{})
+	//	config.DB.AutoMigrate(&models.User{}, &models.Ticket{}, &models.Category{})
 	r := mux.NewRouter().StrictSlash(true)
-
-
+	route.Authroutes(r)
 	route.Ticket(r)
 	route.User(r)
 	route.Category(r)
@@ -22,4 +21,3 @@ func main() {
 		panic(err)
 	}
 }
-

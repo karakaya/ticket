@@ -1,68 +1,78 @@
 package models
 
 import (
-	"fmt"
-	"gorm.io/gorm"
 	"log"
-	"net/http"
 	"ticket/config"
+
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
-type User struct{
+type User struct {
 	gorm.Model
-	Name string
-	Email string
+	Name     string
+	Email    string
 	Password string
-	IsAdmin bool `gorm:"default:false"`
+	IsAdmin  bool `gorm:"default:false"`
 }
-func (u *User)	AfterFind(tx *gorm.DB) (err error){
-	u.Password = "secret"
+
+func HashPassword(password string) string {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	if err != nil {
+		panic(err)
+	}
+	return string(bytes)
+}
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
+func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
+	u.Password = HashPassword(u.Password)
+	return
+
+}
+
+func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
+	u.Password = HashPassword(u.Password)
 	return
 }
 
-func  CreateUser(r *http.Request) *User{
-	user:=&User{
-		Name: r.FormValue("name"),
-		Email: r.FormValue("email"),
-		Password: r.FormValue("password"),
-	}
-	config.DB.Save(user)
-	return user
+func (u *User) AfterFind(tx *gorm.DB) (err error) {
+	u.Password = HashPassword(u.Password)
+	return
 }
 
+func (u *User) CreateUser() *User {
+	config.DB.Create(&u)
+	return u
+}
 
 func GetUser(id int) *User {
 	var user User
-	result := config.DB.First(&user,id)
-	if result.RowsAffected < 1{
+	result := config.DB.First(&user, id)
+	if result.RowsAffected < 1 {
 		log.Println("record not found")
 		return nil
 	}
 	return &user
 }
 
-func GetAllUsers() []User{
+func GetAllUsers() []User {
 	var users []User
 	config.DB.Find(&users)
 	return users
 }
-
-func (u *User) UpdateUser(id int) *User{
-	var currUser User
-	config.DB.First(&User{},id).Scan(&currUser)
-	fmt.Println(currUser)
-	currUser.Name = u.Name
-	currUser.Email= u.Email
-	currUser.Password = u.Password
-	config.DB.Save(&currUser)
+func (u *User) UpdateUser(user *User) *User {
+	u.Name = user.Name
+	u.Email = user.Email
+	u.Password = user.Password
+	config.DB.Save(&u)
 	return u
 }
-func DeleteUser(id int) bool {
-	check := config.DB.Delete(&User{},id)
-	if check.RowsAffected == 0{
-		log.Println("record not found")
-		return false
-	}
-	log.Println("record found and deleted")
-	return  true
+
+func (u *User) DeleteUser() *User {
+	config.DB.Delete(&u)
+	return u
 }
