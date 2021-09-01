@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"ticket/config"
 	"ticket/models"
@@ -11,6 +12,7 @@ import (
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
+
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
@@ -21,7 +23,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var user models.User
-	config.DB.First(&user).Where("username = ?", username)
+	config.DB.First(&user, "name = ?", username)
+	fmt.Println(user)
 	check := CheckPasswordHash(password, user.Password)
 
 	if check {
