@@ -16,7 +16,7 @@ func InitAdmin() {
 	password := "password"
 	user := &models.User{
 		Name:     name,
-		Email:    "admin@admin com",
+		Email:    "admin admin com",
 		Password: models.HashPassword(password),
 		IsAdmin:  true,
 	}
