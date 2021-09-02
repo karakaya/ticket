@@ -19,7 +19,6 @@ func InitAdmin() {
 		Password: models.HashPassword(password),
 		IsAdmin:  true,
 	}
-	log.Printf("init user; name: %s, password: %s \n", name, password)
 
 	config.DB.Create(&user)
 
