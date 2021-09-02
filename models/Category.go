@@ -1,12 +1,11 @@
 package models
 
 import (
-	"gorm.io/gorm"
 	"log"
 	"ticket/config"
-)
 
-var db *gorm.DB
+	"gorm.io/gorm"
+)
 
 type Category struct {
 	gorm.Model
@@ -14,14 +13,11 @@ type Category struct {
 }
 
 func (c *Category) CreateCategory() *Category {
-	check := config.DB.Create(&Category{Title: c.Title})
-	if check.RowsAffected >= 1 {
-		log.Println("category saved")
-	}
+	config.DB.Create(&Category{Title: c.Title})
 	return c
 }
 
-func GetCategory(ID string) *Category {
+func GetCategory(ID int) *Category {
 	var category Category
 	config.DB.Find(&category, ID)
 	return &category
@@ -33,11 +29,9 @@ func GetAllCategories() []Category {
 	return categories
 }
 
-func (c *Category) UpdateCategory(id int) *Category {
-	var currCategory Category
-	config.DB.First(&currCategory, id)
-	currCategory.Title = c.Title
-	config.DB.Save(&currCategory)
+func (c *Category) UpdateCategory(category *Category) *Category {
+	c.Title = category.Title
+	config.DB.Save(&c)
 	return c
 }
 

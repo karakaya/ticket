@@ -39,11 +39,6 @@ func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
 	return
 }
 
-func (u *User) AfterFind(tx *gorm.DB) (err error) {
-	u.Password = HashPassword(u.Password)
-	return
-}
-
 func (u *User) CreateUser() *User {
 	config.DB.Create(&u)
 	return u
@@ -69,6 +64,7 @@ func (u *User) UpdateUser(user *User) *User {
 	u.Email = user.Email
 	u.Password = user.Password
 	config.DB.Save(&u)
+
 	return u
 }
 

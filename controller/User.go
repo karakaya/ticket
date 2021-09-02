@@ -14,14 +14,7 @@ import (
 )
 
 func ViewUser(w http.ResponseWriter, r *http.Request) {
-	id := ConvertInt(mux.Vars(r)["id"])
-	if id < 1 {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("missing id parameter"))
-		return
-	}
-
-	user := models.GetUser(id)
+	user := models.GetUser(ConvertInt(mux.Vars(r)["id"]))
 	w.WriteHeader(http.StatusOK)
 	res, _ := json.Marshal(user)
 	w.Write(res)
@@ -45,15 +38,14 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	users := models.GetAllUsers()
-	allUsers, _ := json.Marshal(users)
+	allUsers, _ := json.Marshal(models.GetAllUsers())
 	w.Write(allUsers)
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	username := GetAuthUsername(r)
-	var curUser models.User
 
+	var curUser models.User
 	config.DB.Find(&curUser, "name = ?", username)
 
 	if len(r.FormValue("password")) == 0 || len(r.FormValue("name")) == 0 || len(r.FormValue("email")) == 0 {

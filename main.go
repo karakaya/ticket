@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"ticket/config"
+	"ticket/migration"
 	"ticket/route"
 
 	"github.com/gorilla/mux"
@@ -10,12 +11,12 @@ import (
 
 func main() {
 	config.ConnectDB()
-	//	config.DB.AutoMigrate(&models.User{}, &models.Ticket{}, &models.Category{})
+
+	//migration.Migrate()
+	migration.InitAdmin()
 	r := mux.NewRouter().StrictSlash(true)
-	route.Authroutes(r)
-	route.Ticket(r)
-	route.User(r)
-	route.Category(r)
+	route.Routes(r)
+
 	err := http.ListenAndServe(":8080", r)
 	if err != nil {
 		panic(err)
