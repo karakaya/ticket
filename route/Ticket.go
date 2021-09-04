@@ -14,4 +14,7 @@ func Ticket(r *mux.Router) {
 	t.HandleFunc("/{id}", controller.ViewTicket).Methods("GET")
 	t.HandleFunc("/{id}", controller.UpdateTicket).Methods("PATCH")
 	t.HandleFunc("/{id}", middleware.IsAuth(controller.DeleteTicket)).Methods("DELETE")
+
+	t.HandleFunc("/reply-ticket/{id}", middleware.IsAuth(controller.ReplyTicket)).Methods("GET")
+	t.HandleFunc("/reply-ticket/{id}", middleware.IsAuth(controller.ReplyTicket)).Methods("POST")
 }

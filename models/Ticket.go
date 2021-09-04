@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"ticket/config"
 
 	"gorm.io/gorm"
@@ -11,17 +12,31 @@ type Ticket struct {
 	Subject     string
 	Description string
 	Priority    string
-	//CategoryID  Category `gorm:"foreignKey:ID;References:ID;"`
-	CategoryID int
-	UserID     int `gorm:"foreignKey:id"`
-	Status     int
-	Note       string
+	CategoryID  int
+	UserID      uint
+	User        User
+	Status      int
+	Note        string
+	Reply       []Reply
+}
+type Reply struct {
+	gorm.Model
+	TicketID uint
+	Ticket   Ticket
+
+	UserID  uint
+	User    User
+	Message string
 }
 
-func ViewTicket(ID int) *Ticket {
+func ViewTicket(ID int) Ticket {
 	var ticket Ticket
-	config.DB.First(Ticket{}, ID).Scan(&ticket)
-	return &ticket
+	err := config.DB.Preload("User").Preload("Reply").Find(&ticket, ID).Error
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return ticket
 }
 
 func (t *Ticket) UpdateTicket(newTicket *Ticket) *Ticket {
@@ -37,7 +52,7 @@ func (t *Ticket) CreateTicket() *Ticket {
 		Subject:     t.Subject,
 		Description: t.Description,
 		CategoryID:  t.CategoryID,
-		UserID:      t.UserID,
+		User:        t.User,
 	}
 	config.DB.Create(ticket)
 	return ticket

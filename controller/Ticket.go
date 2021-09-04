@@ -31,10 +31,12 @@ func CreateTicket(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ticket := &models.Ticket{
+
 		Subject:     r.FormValue("subject"),
 		Description: r.FormValue("description"),
+		Priority:    "",
 		CategoryID:  int(category.ID),
-		UserID:      int(user.ID),
+		User:        user,
 	}
 
 	res, _ := json.Marshal(ticket.CreateTicket())
@@ -65,7 +67,7 @@ func UpdateTicket(w http.ResponseWriter, r *http.Request) {
 	id := ConvertInt(mux.Vars(r)["id"])
 	var curTicket models.Ticket
 	config.DB.Find(&curTicket, id)
-	if uint(curTicket.UserID) != user.ID {
+	if uint(curTicket.User.ID) != user.ID {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -74,13 +76,40 @@ func UpdateTicket(w http.ResponseWriter, r *http.Request) {
 		Subject:     r.FormValue("subject"),
 		Description: r.FormValue("description"),
 		CategoryID:  int(category.ID),
-		UserID:      int(user.ID),
+		User:        user,
 	}
 
 	res, _ := json.Marshal(curTicket.UpdateTicket(newTicket))
 	w.Write(res)
 }
+func ReplyTicket(w http.ResponseWriter, r *http.Request) {
+	if len(mux.Vars(r)["id"]) == 0 || len(r.FormValue("message")) == 0 {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("invalid parameters"))
+		return
+	}
 
+	var ticket models.Ticket
+	config.DB.First(&ticket, mux.Vars(r)["id"])
+
+	var user models.User
+	config.DB.First(&user, "name = ?", GetAuthUsername(r))
+
+	if user.IsAdmin || ticket.UserID == user.ID {
+		reply := &models.Reply{
+			Message:  r.FormValue("message"),
+			TicketID: ticket.ID,
+			UserID:   user.ID,
+		}
+
+		config.DB.Create(reply)
+		res, _ := json.Marshal(reply)
+		w.Write(res)
+		return
+	}
+	w.WriteHeader(http.StatusInternalServerError)
+
+}
 func DeleteTicket(w http.ResponseWriter, r *http.Request) {
 
 	var ticket models.Ticket
@@ -94,7 +123,7 @@ func DeleteTicket(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("ticket not found"))
 		return
 	}
-	if ticket.UserID != int(user.ID) {
+	if int(ticket.User.ID) != int(user.ID) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

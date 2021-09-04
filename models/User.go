@@ -46,7 +46,7 @@ func (u *User) CreateUser() *User {
 
 func GetUser(id int) *User {
 	var user User
-	result := config.DB.First(&user, id)
+	result := config.DB.Omit("Password").Find(&user, id)
 	if result.RowsAffected < 1 {
 		log.Println("record not found")
 		return nil

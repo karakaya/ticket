@@ -12,8 +12,8 @@ import (
 func main() {
 	config.ConnectDB()
 
-	//migration.Migrate()
-	migration.InitAdmin()
+	migration.Migrate()
+	//migration.InitAdmin()
 	r := mux.NewRouter().StrictSlash(true)
 	route.Routes(r)
 
@@ -21,4 +21,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 }

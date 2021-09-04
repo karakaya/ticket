@@ -8,7 +8,7 @@ import (
 
 func Migrate() {
 	log.Println("migrating")
-	config.DB.AutoMigrate(&models.User{}, &models.Ticket{}, &models.Category{})
+	config.DB.AutoMigrate(&models.Category{}, &models.User{}, &models.Reply{}, &models.Ticket{})
 }
 
 func InitAdmin() {
