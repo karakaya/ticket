@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"ticket/config"
 	"ticket/models"
@@ -15,7 +14,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	username := r.FormValue("username")
 	password := r.FormValue("password")
-
 	if len(password) == 0 || len(username) == 0 {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("len 0!"))
@@ -24,9 +22,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	var user models.User
 	config.DB.First(&user, "name = ?", username)
-	fmt.Println(user)
-	check := CheckPasswordHash(password, user.Password)
-
+	check := CheckPasswordHash(user.Password, password)
 	if check {
 		token, err := getToken(username)
 		if err != nil {
@@ -80,7 +76,8 @@ func HashPassword(password string) string {
 	return string(bytes)
 }
 
-func CheckPasswordHash(password, hash string) bool {
+func CheckPasswordHash(hash, password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+
 	return err == nil
 }

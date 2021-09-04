@@ -17,7 +17,7 @@ type User struct {
 }
 
 func HashPassword(password string) string {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 	if err != nil {
 		panic(err)
 	}
@@ -46,7 +46,7 @@ func (u *User) CreateUser() *User {
 
 func GetUser(id int) *User {
 	var user User
-	result := config.DB.Omit("Password").Find(&user, id)
+	result := config.DB.Find(&user, id)
 	if result.RowsAffected < 1 {
 		log.Println("record not found")
 		return nil
