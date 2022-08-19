@@ -3,7 +3,7 @@ package ticket
 import "github.com/google/uuid"
 
 type Service interface {
-	CreateTicket(ticket CreateTicketRequest) (uuid.UUID, error)
+	CreateTicket(ticketRequest CreateTicketRequest) (uuid.UUID, error)
 	GetTicket(id uuid.UUID) (FindTicketResponse, error)
 	DeleteTicket(id uuid.UUID) error
 }
@@ -12,8 +12,15 @@ type service struct {
 	repo Repository
 }
 
-func (s service) CreateTicket(ticket CreateTicketRequest) (uuid.UUID, error) {
-	return uuid.UUID{}, nil
+func (s service) CreateTicket(ticketRequest CreateTicketRequest) (uuid.UUID, error) {
+	var ticket Ticket
+
+	ticket.ID = uuid.New()
+	ticket.Email = ticketRequest.Email
+	ticket.Title = ticketRequest.Title
+	ticket.Body = ticketRequest.Body
+
+	return s.repo.Create(ticket)
 }
 
 func (s service) GetTicket(id uuid.UUID) (FindTicketResponse, error) {

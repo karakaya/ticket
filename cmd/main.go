@@ -5,6 +5,8 @@ import (
 	"os"
 	"ticket/internals/ticket"
 
+	"ticket/internals/db"
+
 	"github.com/gorilla/mux"
 )
 
@@ -13,7 +15,12 @@ const listenPort = "80"
 func main() {
 
 	route := mux.NewRouter()
-	repo := ticket.NewRepository(nil)
+
+	dbc, err := db.GetMongoClient()
+	if err != nil {
+		panic(err)
+	}
+	repo := ticket.NewRepository(dbc)
 	service := ticket.NewService(repo)
 
 	ticket.RegisterHandlers(route, service)
@@ -22,8 +29,7 @@ func main() {
 	if os.Getenv("PORT") != "" {
 		port = os.Getenv("PORT")
 	}
-	err := http.ListenAndServe(":"+port, route)
-	if err != nil {
+	if err := http.ListenAndServe(":"+port, route); err != nil {
 		panic(err)
 	}
 
