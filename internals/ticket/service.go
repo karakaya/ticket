@@ -4,7 +4,7 @@ import "github.com/google/uuid"
 
 type Service interface {
 	CreateTicket(ticketRequest CreateTicketRequest) (uuid.UUID, error)
-	GetTicket(id uuid.UUID) (FindTicketResponse, error)
+	GetTicket(id uuid.UUID) (Ticket, error)
 	DeleteTicket(id uuid.UUID) error
 }
 
@@ -23,8 +23,8 @@ func (s service) CreateTicket(ticketRequest CreateTicketRequest) (uuid.UUID, err
 	return s.repo.Create(ticket)
 }
 
-func (s service) GetTicket(id uuid.UUID) (FindTicketResponse, error) {
-	return FindTicketResponse{}, nil
+func (s service) GetTicket(id uuid.UUID) (Ticket, error) {
+	return s.repo.Get(id)
 }
 
 func (s service) DeleteTicket(id uuid.UUID) error {

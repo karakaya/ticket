@@ -1,6 +1,10 @@
 package ticket
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type CreateTicketRequest struct {
 	Title string `json:"title"`
@@ -13,4 +17,10 @@ type CreateTicketResponse struct {
 }
 
 type FindTicketResponse struct {
+	ID        uuid.UUID `json:"_id"`
+	Title     string    `json:"title"`
+	Body      string    `json:"body"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

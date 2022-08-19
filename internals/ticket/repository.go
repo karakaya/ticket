@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -18,7 +19,11 @@ type repository struct {
 }
 
 func (r repository) Get(id uuid.UUID) (Ticket, error) {
-	return Ticket{}, nil
+	collection := r.client.Database("ticket").Collection("tickets")
+	var ticket Ticket
+	collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&ticket)
+
+	return ticket, nil
 }
 
 func (r repository) Create(ticket Ticket) (uuid.UUID, error) {

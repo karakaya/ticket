@@ -7,13 +7,13 @@ import (
 )
 
 type Ticket struct {
-	ID    uuid.UUID `bson:"_id"`
-	Title string    `bson:"title"`
-	Body  string    `bson:"body"`
+	ID    uuid.UUID `bson:"_id" json:"id"`
+	Title string    `bson:"title" json:"title"`
+	Body  string    `bson:"body" json:"body"`
 	// User      User
-	Email     string `bson:"email"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Email     string    `bson:"email" json:"email"`
+	CreatedAt time.Time `bson:"created_at" json:"created_at"`
+	UpdatedAt time.Time `bson:"updated_at" json:"updated_at"`
 }
 
 type User struct {
@@ -21,5 +21,5 @@ type User struct {
 	Name      string    `bson:"name"`
 	Email     string    `bson:"email"`
 	Password  string    `bson:"password"`
-	CreatedAt time.Time
+	CreatedAt time.Time `bson:"created_at"`
 }
