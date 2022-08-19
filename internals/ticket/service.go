@@ -1,6 +1,10 @@
 package ticket
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Service interface {
 	CreateTicket(ticketRequest CreateTicketRequest) (uuid.UUID, error)
@@ -19,7 +23,8 @@ func (s service) CreateTicket(ticketRequest CreateTicketRequest) (uuid.UUID, err
 	ticket.Email = ticketRequest.Email
 	ticket.Title = ticketRequest.Title
 	ticket.Body = ticketRequest.Body
-
+	ticket.CreatedAt = time.Now()
+	ticket.UpdatedAt = time.Now()
 	return s.repo.Create(ticket)
 }
 
