@@ -35,6 +35,11 @@ func (r repository) Create(ticket Ticket) (uuid.UUID, error) {
 	return ticket.ID, nil
 }
 func (r repository) Delete(id uuid.UUID) error {
+	collection := r.client.Database("ticket").Collection("tickets")
+	_, err := collection.DeleteOne(context.TODO(), bson.M{"_id": id})
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

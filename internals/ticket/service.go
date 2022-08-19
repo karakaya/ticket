@@ -25,6 +25,7 @@ func (s service) CreateTicket(ticketRequest CreateTicketRequest) (uuid.UUID, err
 	ticket.Body = ticketRequest.Body
 	ticket.CreatedAt = time.Now()
 	ticket.UpdatedAt = time.Now()
+
 	return s.repo.Create(ticket)
 }
 
@@ -33,7 +34,7 @@ func (s service) GetTicket(id uuid.UUID) (Ticket, error) {
 }
 
 func (s service) DeleteTicket(id uuid.UUID) error {
-	return nil
+	return s.repo.Delete(id)
 }
 
 func NewService(r Repository) Service {
