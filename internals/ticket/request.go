@@ -11,3 +11,6 @@ type CreateTicketRequest struct {
 type CreateTicketResponse struct {
 	ID uuid.UUID `json:"id"`
 }
+
+type FindTicketResponse struct {
+}
