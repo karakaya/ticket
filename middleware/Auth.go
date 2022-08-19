@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"ticket/config"
 	"ticket/controller"
-	"ticket/models"
+	"ticket/internals/ticket"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -49,12 +49,9 @@ func IsAdmin(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		username := claims.(jwt.MapClaims)["username"].(string)
-		var user models.User
+
+		var user ticket.User
 		config.DB.Table("users").Where("name = ?", username).Find(&user)
-		if !user.IsAdmin {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
 
 		next.ServeHTTP(w, r)
 

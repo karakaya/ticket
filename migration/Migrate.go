@@ -3,21 +3,21 @@ package migration
 import (
 	"log"
 	"ticket/config"
-	"ticket/models"
+	"ticket/internals/ticket"
 )
 
 func Migrate() {
 	log.Println("migrating")
-	config.DB.AutoMigrate(&models.Category{}, &models.User{}, &models.Reply{}, &models.Ticket{})
+	// config.DB.AutoMigrate(&ticket.User{}, &models.User{}, &models.Reply{}, &models.Ticket{})
 }
 
 func InitAdmin() {
 	name := "admin"
 	password := "password"
-	user := &models.User{
-		Name:     name,
-		Password: models.HashPassword(password),
-		IsAdmin:  true,
+	user := &ticket.User{
+		Name: name,
+		// Password: models.HashPassword(password),
+		Password: password,
 	}
 
 	config.DB.Create(&user)
