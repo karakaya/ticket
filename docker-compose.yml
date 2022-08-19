@@ -6,27 +6,15 @@ services:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      - mysql
+      - mongo
     restart: on-failure
     volumes:
       - .:/go/src/ticket
     ports:
-      - "8080:8080"
-      - "8081:8081"
+      - "80:8080"
     networks:
       - ticketNetwork
-  mysql:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: "password"
-      MYSQL_DATABASE: "ticket"
-    volumes:
-      - /var/lib/mysql
-      #- ./mysql:/docker-entrypoint-initdb.d
-    networks:
-      - ticketNetwork
-    ports:
-      - "3306:3306"
+  
 networks:
   ticketNetwork:
     driver: bridge
