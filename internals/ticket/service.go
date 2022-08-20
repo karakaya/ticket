@@ -3,9 +3,8 @@ package ticket
 import (
 	"time"
 
-	"github.com/karakaya/ticket/internals/rabbit"
-
 	"github.com/google/uuid"
+	"github.com/karakaya/ticket/internals/rabbit"
 )
 
 type Service interface {
@@ -15,8 +14,7 @@ type Service interface {
 }
 
 type service struct {
-	repo     Repository
-	rabbitmq *rabbit.RabbitMQ
+	repo Repository
 }
 
 func (s service) CreateTicket(ticketRequest CreateTicketRequest) (uuid.UUID, error) {
@@ -32,6 +30,8 @@ func (s service) CreateTicket(ticketRequest CreateTicketRequest) (uuid.UUID, err
 	uid, err := s.repo.Create(ticket)
 	if err == nil {
 		//publish rabbitmq message
+		ticketBytes, _ := ticket.Encoder()
+		rabbit.Publish(ticketBytes)
 	}
 	return uid, err
 }
@@ -44,6 +44,6 @@ func (s service) DeleteTicket(id uuid.UUID) error {
 	return s.repo.Delete(id)
 }
 
-func NewService(r Repository, rabbit *rabbit.RabbitMQ) Service {
-	return service{repo: r, rabbitmq: rabbit}
+func NewService(r Repository) Service {
+	return service{repo: r}
 }

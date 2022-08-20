@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -23,11 +25,13 @@ func main() {
 		panic(err)
 	}
 
-	rabbitmq := new(rabbit.RabbitMQ)
-	rabbitmq.Connect()
+	err = rabbit.ConnRabbitMQ()
+	if err != nil {
+		panic(err)
+	}
 
 	repo := ticket.NewRepository(dbc)
-	service := ticket.NewService(repo, rabbitmq)
+	service := ticket.NewService(repo)
 
 	ticket.RegisterHandlers(route, service)
 
@@ -36,8 +40,9 @@ func main() {
 		port = os.Getenv("PORT")
 	}
 
+	fmt.Printf("Starting server at port :%s\n", port)
 	if err := http.ListenAndServe(":"+port, route); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 }

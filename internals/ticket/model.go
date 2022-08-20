@@ -1,6 +1,8 @@
 package ticket
 
 import (
+	"bytes"
+	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
@@ -22,4 +24,11 @@ type User struct {
 	Email     string    `bson:"email"`
 	Password  string    `bson:"password"`
 	CreatedAt time.Time `bson:"created_at"`
+}
+
+func (t *Ticket) Encoder() ([]byte, error) {
+	var b bytes.Buffer
+	encoder := json.NewEncoder(&b)
+	err := encoder.Encode(t)
+	return b.Bytes(), err
 }

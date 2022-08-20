@@ -1,27 +1,39 @@
 package rabbit
 
 import (
+	"context"
+	"encoding/json"
+	"log"
+	"time"
+
+	"github.com/google/uuid"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type RabbitMQ struct {
-	conn    *amqp.Connection
-	channel *amqp.Channel
+type TicketRabbit struct {
+	ID        uuid.UUID `bson:"_id" json:"id"`
+	Title     string    `bson:"title" json:"title"`
+	Body      string    `bson:"body" json:"body"`
+	Email     string    `bson:"email" json:"email"`
+	CreatedAt time.Time `bson:"created_at" json:"created_at"`
+	UpdatedAt time.Time `bson:"updated_at" json:"updated_at"`
 }
 
-func (r *RabbitMQ) Connect() (err error) {
-	//TODO rabbitmq uri is hardcoded for now
-	r.conn, err = amqp.Dial("amqp://guest:guest@localhost:5672/")
+// var conn *amqp.Connection
+var channel *amqp.Channel
+
+func ConnRabbitMQ() error {
+	conn, err := amqp.Dial("amqp://guest:guest@localhost:7001/")
 	if err != nil {
 		return err
 	}
 
-	r.channel, err = r.conn.Channel()
+	channel, err = conn.Channel()
 	if err != nil {
 		return err
 	}
 
-	r.channel.QueueDeclare(
+	channel.QueueDeclare(
 		"email", // name
 		true,    // durable
 		false,   // delete when unused
@@ -29,10 +41,25 @@ func (r *RabbitMQ) Connect() (err error) {
 		false,   // no-wait
 		nil,     // arguments
 	)
-	return nil
 
+	return nil
 }
 
-func (r *RabbitMQ) Publish() {
-
+func Publish(message []byte) {
+	var ticket TicketRabbit
+	json.Unmarshal(message, &ticket)
+	err := channel.PublishWithContext(
+		context.TODO(),
+		"",      // exchange
+		"email", // routing key
+		false,   // mandatory
+		false,   // immediate
+		amqp.Publishing{
+			ContentType: "application/json",
+			Body:        message,
+		})
+	if err != nil {
+		panic(err)
+	}
+	log.Printf(" [x] Sent %s\n", message)
 }
