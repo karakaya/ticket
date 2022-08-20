@@ -15,6 +15,7 @@ func GetMongoClient() (*mongo.Client, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	mongoClient = client
 	return mongoClient, nil
 }

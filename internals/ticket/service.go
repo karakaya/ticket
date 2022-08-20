@@ -3,6 +3,8 @@ package ticket
 import (
 	"time"
 
+	"ticket/internals/rabbit"
+
 	"github.com/google/uuid"
 )
 
@@ -13,7 +15,8 @@ type Service interface {
 }
 
 type service struct {
-	repo Repository
+	repo     Repository
+	rabbitmq *rabbit.RabbitMQ
 }
 
 func (s service) CreateTicket(ticketRequest CreateTicketRequest) (uuid.UUID, error) {
@@ -26,7 +29,11 @@ func (s service) CreateTicket(ticketRequest CreateTicketRequest) (uuid.UUID, err
 	ticket.CreatedAt = time.Now()
 	ticket.UpdatedAt = time.Now()
 
-	return s.repo.Create(ticket)
+	uid, err := s.repo.Create(ticket)
+	if err == nil {
+		//publish rabbitmq message
+	}
+	return uid, err
 }
 
 func (s service) GetTicket(id uuid.UUID) (Ticket, error) {
@@ -37,6 +44,6 @@ func (s service) DeleteTicket(id uuid.UUID) error {
 	return s.repo.Delete(id)
 }
 
-func NewService(r Repository) Service {
-	return service{repo: r}
+func NewService(r Repository, rabbit *rabbit.RabbitMQ) Service {
+	return service{repo: r, rabbitmq: rabbit}
 }

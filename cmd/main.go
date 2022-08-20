@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"os"
+	"ticket/internals/rabbit"
 	"ticket/internals/ticket"
 
 	"ticket/internals/db"
@@ -20,8 +21,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	rabbitmq := new(rabbit.RabbitMQ)
+	rabbitmq.Connect()
+
 	repo := ticket.NewRepository(dbc)
-	service := ticket.NewService(repo)
+	service := ticket.NewService(repo, rabbitmq)
 
 	ticket.RegisterHandlers(route, service)
 
@@ -29,6 +34,7 @@ func main() {
 	if os.Getenv("PORT") != "" {
 		port = os.Getenv("PORT")
 	}
+
 	if err := http.ListenAndServe(":"+port, route); err != nil {
 		panic(err)
 	}
