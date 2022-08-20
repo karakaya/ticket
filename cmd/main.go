@@ -3,10 +3,11 @@ package main
 import (
 	"net/http"
 	"os"
-	"ticket/internals/rabbit"
-	"ticket/internals/ticket"
 
-	"ticket/internals/db"
+	"github.com/karakaya/ticket/internals/rabbit"
+	"github.com/karakaya/ticket/internals/ticket"
+
+	"github.com/karakaya/ticket/internals/db"
 
 	"github.com/gorilla/mux"
 )
