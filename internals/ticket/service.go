@@ -3,7 +3,7 @@ package ticket
 import (
 	"time"
 
-	"ticket/internals/rabbit"
+	"github.com/karakaya/ticket/internals/rabbit"
 
 	"github.com/google/uuid"
 )

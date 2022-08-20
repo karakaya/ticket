@@ -33,6 +33,6 @@ func (r *RabbitMQ) Connect() (err error) {
 
 }
 
-func (r *RabbitMQ) Publish(msg string) {
+func (r *RabbitMQ) Publish() {
 
 }

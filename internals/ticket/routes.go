@@ -3,7 +3,8 @@ package ticket
 import (
 	"encoding/json"
 	"net/http"
-	"ticket/internals/middleware"
+
+	"github.com/karakaya/ticket/internals/middleware"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
