@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	emailsender "github.com/karakaya/ticket/internals/email-sender"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -46,7 +47,8 @@ func main() {
 
 	go func() {
 		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
+
+			emailsender.Hello(string(d.Body))
 		}
 	}()
 
