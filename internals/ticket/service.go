@@ -29,9 +29,8 @@ func (s service) CreateTicket(ticketRequest CreateTicketRequest) (uuid.UUID, err
 
 	uid, err := s.repo.Create(ticket)
 	if err == nil {
-		//publish rabbitmq message
 		ticketBytes, _ := ticket.Encoder()
-		rabbit.Publish(ticketBytes)
+		go rabbit.Publish(ticketBytes)
 	}
 	return uid, err
 }

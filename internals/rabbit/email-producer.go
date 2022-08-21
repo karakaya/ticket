@@ -3,7 +3,6 @@ package rabbit
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -45,7 +44,7 @@ func ConnRabbitMQ() error {
 	return nil
 }
 
-func Publish(message []byte) {
+func Publish(message []byte) error {
 	var ticket TicketRabbit
 	json.Unmarshal(message, &ticket)
 	err := channel.PublishWithContext(
@@ -59,7 +58,7 @@ func Publish(message []byte) {
 			Body:        message,
 		})
 	if err != nil {
-		panic(err)
+		return err
 	}
-	log.Printf(" [x] Sent %s\n", message)
+	return nil
 }
