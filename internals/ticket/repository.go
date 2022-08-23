@@ -19,6 +19,14 @@ type repository struct {
 }
 
 func (r repository) Get(id uuid.UUID) (Ticket, error) {
+	// return Ticket{
+	// 	ID:        id,
+	// 	Title:     "heloo",
+	// 	Body:      "",
+	// 	Email:     "",
+	// 	CreatedAt: time.Time{},
+	// 	UpdatedAt: time.Time{},
+	// }, nil
 	collection := r.client.Database("ticket").Collection("tickets")
 	var ticket Ticket
 	collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&ticket)

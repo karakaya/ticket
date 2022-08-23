@@ -9,7 +9,7 @@ import (
 )
 
 type Ticket struct {
-	ID    uuid.UUID `bson:"_id" json:"id"`
+	ID    uuid.UUID `bson:"_id" json:"_id"`
 	Title string    `bson:"title" json:"title"`
 	Body  string    `bson:"body" json:"body"`
 	// User      User

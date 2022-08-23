@@ -13,7 +13,7 @@ type CreateTicketRequest struct {
 }
 
 type CreateTicketResponse struct {
-	ID uuid.UUID `json:"id"`
+	ID uuid.UUID `json:"_id"`
 }
 
 type FindTicketResponse struct {
