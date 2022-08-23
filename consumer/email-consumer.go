@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
+	"github.com/karakaya/ticket/consumer/sender"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -47,9 +47,8 @@ func main() {
 
 	go func() {
 		for d := range msgs {
-
-			fmt.Println(d.Body)
-
+			// emailsender.SendEmail(d.Body)
+			sender.SendEmail(d.Body)
 		}
 	}()
 
