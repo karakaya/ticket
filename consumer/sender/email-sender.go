@@ -42,6 +42,7 @@ func SendEmail(msg []byte) {
 	e.SetHeader("From", from)
 	e.SetHeader("To", message.Email)
 	e.SetHeader("Subject", "Your ticket has beeen created")
+
 	body := fmt.Sprintf(`
 	<b> Ticket ID </b> %s <br>
 	<b> Title </b> %s </b> <br>

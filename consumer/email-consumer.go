@@ -47,7 +47,6 @@ func main() {
 
 	go func() {
 		for d := range msgs {
-			// emailsender.SendEmail(d.Body)
 			sender.SendEmail(d.Body)
 		}
 	}()
