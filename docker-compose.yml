@@ -38,6 +38,14 @@ services:
       - ME_CONFIG_MONGODB_ADMINPASSWORD=
       - ME_CONFIG_MONGODB_SERVER=mongodb
   
+  rabbit:
+    image: rabbitmq:3-management
+    container_name: 'rabbitmq'
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    networks:
+      - ticketNetwork
 networks:
   ticketNetwork:
     driver: bridge
