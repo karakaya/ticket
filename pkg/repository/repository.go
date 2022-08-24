@@ -1,16 +1,17 @@
-package ticket
+package repository
 
 import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/karakaya/ticket/pkg/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Repository interface {
-	Create(ticket Ticket) (uuid.UUID, error)
-	Get(id uuid.UUID) (Ticket, error)
+	Create(ticket model.Ticket) (uuid.UUID, error)
+	Get(id uuid.UUID) (model.Ticket, error)
 	Delete(id uuid.UUID) error
 }
 
@@ -18,23 +19,15 @@ type repository struct {
 	client *mongo.Client
 }
 
-func (r repository) Get(id uuid.UUID) (Ticket, error) {
-	// return Ticket{
-	// 	ID:        id,
-	// 	Title:     "heloo",
-	// 	Body:      "",
-	// 	Email:     "",
-	// 	CreatedAt: time.Time{},
-	// 	UpdatedAt: time.Time{},
-	// }, nil
+func (r repository) Get(id uuid.UUID) (model.Ticket, error) {
 	collection := r.client.Database("ticket").Collection("tickets")
-	var ticket Ticket
+	var ticket model.Ticket
 	collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&ticket)
 
 	return ticket, nil
 }
 
-func (r repository) Create(ticket Ticket) (uuid.UUID, error) {
+func (r repository) Create(ticket model.Ticket) (uuid.UUID, error) {
 	collection := r.client.Database("ticket").Collection("tickets")
 	_, err := collection.InsertOne(context.TODO(), ticket)
 	if err != nil {

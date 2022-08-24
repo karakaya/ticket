@@ -1,24 +1,27 @@
-package ticket
+package service
 
 import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/karakaya/ticket/internals/rabbit"
+	"github.com/karakaya/ticket/pkg/model"
+	"github.com/karakaya/ticket/pkg/rabbit"
+	"github.com/karakaya/ticket/pkg/repository"
+	"github.com/karakaya/ticket/pkg/request"
 )
 
 type Service interface {
-	CreateTicket(ticketRequest CreateTicketRequest) (uuid.UUID, error)
-	GetTicket(id uuid.UUID) (Ticket, error)
+	CreateTicket(ticketRequest request.CreateTicketRequest) (uuid.UUID, error)
+	GetTicket(id uuid.UUID) (model.Ticket, error)
 	DeleteTicket(id uuid.UUID) error
 }
 
 type service struct {
-	repo Repository
+	repo repository.Repository
 }
 
-func (s service) CreateTicket(ticketRequest CreateTicketRequest) (uuid.UUID, error) {
-	var ticket Ticket
+func (s service) CreateTicket(ticketRequest request.CreateTicketRequest) (uuid.UUID, error) {
+	var ticket model.Ticket
 
 	ticket.ID = uuid.New()
 	ticket.Email = ticketRequest.Email
@@ -35,7 +38,7 @@ func (s service) CreateTicket(ticketRequest CreateTicketRequest) (uuid.UUID, err
 	return uid, err
 }
 
-func (s service) GetTicket(id uuid.UUID) (Ticket, error) {
+func (s service) GetTicket(id uuid.UUID) (model.Ticket, error) {
 	return s.repo.Get(id)
 }
 
@@ -43,6 +46,6 @@ func (s service) DeleteTicket(id uuid.UUID) error {
 	return s.repo.Delete(id)
 }
 
-func NewService(r Repository) Service {
+func NewService(r repository.Repository) Service {
 	return service{repo: r}
 }

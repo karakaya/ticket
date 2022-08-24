@@ -1,4 +1,4 @@
-package ticket
+package model
 
 import (
 	"bytes"

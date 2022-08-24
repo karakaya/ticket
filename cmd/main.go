@@ -6,10 +6,11 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/karakaya/ticket/internals/rabbit"
-	"github.com/karakaya/ticket/internals/ticket"
-
-	"github.com/karakaya/ticket/internals/db"
+	"github.com/karakaya/ticket/pkg/db"
+	"github.com/karakaya/ticket/pkg/rabbit"
+	"github.com/karakaya/ticket/pkg/repository"
+	"github.com/karakaya/ticket/pkg/route"
+	"github.com/karakaya/ticket/pkg/service"
 
 	"github.com/gorilla/mux"
 )
@@ -18,7 +19,7 @@ const listenPort = "80"
 
 func main() {
 
-	route := mux.NewRouter()
+	muxRouter := mux.NewRouter()
 
 	dbc, err := db.GetMongoClient()
 	if err != nil {
@@ -30,10 +31,10 @@ func main() {
 		panic(err)
 	}
 
-	repo := ticket.NewRepository(dbc)
-	service := ticket.NewService(repo)
+	repo := repository.NewRepository(dbc)
+	service := service.NewService(repo)
 
-	ticket.RegisterHandlers(route, service)
+	route.RegisterHandlers(muxRouter, service)
 
 	port := listenPort
 	if os.Getenv("PORT") != "" {
@@ -41,7 +42,7 @@ func main() {
 	}
 
 	fmt.Printf("Starting server at port :%s\n", port)
-	if err := http.ListenAndServe(":"+port, route); err != nil {
+	if err := http.ListenAndServe(":"+port, muxRouter); err != nil {
 		log.Fatal(err)
 	}
 

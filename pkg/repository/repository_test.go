@@ -1,4 +1,4 @@
-package ticket
+package repository
 
 import (
 	"testing"
@@ -9,6 +9,8 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/integration/mtest"
+
+	"github.com/karakaya/ticket/pkg/model"
 )
 
 func TestInsertTicket(t *testing.T) {
@@ -22,7 +24,7 @@ func TestInsertTicket(t *testing.T) {
 
 		repo := NewRepository(mt.Client)
 
-		_, err := repo.Create(Ticket{
+		_, err := repo.Create(model.Ticket{
 			ID:        id,
 			Title:     "ticket title",
 			Body:      "body title",
@@ -42,7 +44,7 @@ func TestFindTicket(t *testing.T) {
 
 	mt.Run("success", func(mt *mtest.T) {
 
-		expectedTicket := Ticket{
+		expectedTicket := model.Ticket{
 			ID:    uuid.New(),
 			Title: "ticket title",
 			Email: "john.doe@test.com",
@@ -63,4 +65,9 @@ func TestFindTicket(t *testing.T) {
 
 		assert.Equal(t, expectedTicket, ticketResponse)
 	})
+}
+
+func TestDeleteTicket(t *testing.T) {
+	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
+	defer mt.Close()
 }

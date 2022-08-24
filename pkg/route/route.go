@@ -1,16 +1,18 @@
-package ticket
+package route
 
 import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/karakaya/ticket/internals/middleware"
+	"github.com/karakaya/ticket/pkg/middleware"
+	"github.com/karakaya/ticket/pkg/request"
+	"github.com/karakaya/ticket/pkg/service"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
-func RegisterHandlers(r *mux.Router, service Service) {
+func RegisterHandlers(r *mux.Router, service service.Service) {
 	res := resource{service}
 	r.Use(middleware.ContentTypeApplicationJsonMiddleware)
 	r.HandleFunc("/ticket", res.create).Methods("POST")
@@ -18,11 +20,11 @@ func RegisterHandlers(r *mux.Router, service Service) {
 }
 
 type resource struct {
-	service Service
+	service service.Service
 }
 
 func (res resource) create(w http.ResponseWriter, r *http.Request) {
-	var ticketRequest CreateTicketRequest
+	var ticketRequest request.CreateTicketRequest
 	err := json.NewDecoder(r.Body).Decode(&ticketRequest)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -33,7 +35,7 @@ func (res resource) create(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	response, _ := json.Marshal(&CreateTicketResponse{ID: uid})
+	response, _ := json.Marshal(&request.CreateTicketResponse{ID: uid})
 
 	w.Write(response)
 	w.WriteHeader(http.StatusCreated)
