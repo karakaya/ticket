@@ -5,7 +5,6 @@ import (
 
 	"github.com/google/uuid"
 	er "github.com/karakaya/ticket/pkg/errors"
-	"github.com/karakaya/ticket/pkg/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -31,7 +30,7 @@ func (r repository) Create(ticket interface{}) (interface{}, error) {
 
 func (r repository) Get(id uuid.UUID) (interface{}, error) {
 	collection := r.client.Database("ticket").Collection("tickets")
-	var ticket model.Ticket
+	var ticket interface{}
 	result := collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&ticket)
 	if result == mongo.ErrNoDocuments {
 		return nil, er.ErrNotFound

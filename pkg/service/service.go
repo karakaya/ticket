@@ -8,6 +8,7 @@ import (
 	"github.com/karakaya/ticket/pkg/rabbit"
 	"github.com/karakaya/ticket/pkg/repository"
 	"github.com/karakaya/ticket/pkg/request"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Service interface {
@@ -45,8 +46,10 @@ func (s service) GetTicket(id uuid.UUID) (model.Ticket, error) {
 	if err != nil {
 		return model.Ticket{}, err
 	}
-	ticketStruct, _ := ticket.(model.Ticket)
-	return ticketStruct, nil
+	data, _ := bson.Marshal(ticket)
+	var ticketResponse model.Ticket
+	bson.Unmarshal(data, &ticketResponse)
+	return ticketResponse, nil
 
 }
 
