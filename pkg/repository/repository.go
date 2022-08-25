@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	er "github.com/karakaya/ticket/pkg/errors"
 	"github.com/karakaya/ticket/pkg/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -22,7 +23,10 @@ type repository struct {
 func (r repository) Get(id uuid.UUID) (interface{}, error) {
 	collection := r.client.Database("ticket").Collection("tickets")
 	var ticket model.Ticket
-	collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&ticket)
+	result := collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&ticket)
+	if result == mongo.ErrNoDocuments {
+		return nil, er.ErrNotFound
+	}
 
 	return ticket, nil
 }
@@ -37,9 +41,13 @@ func (r repository) Create(ticket interface{}) (interface{}, error) {
 }
 func (r repository) Delete(id uuid.UUID) error {
 	collection := r.client.Database("ticket").Collection("tickets")
-	_, err := collection.DeleteOne(context.TODO(), bson.M{"_id": id})
-	if err != nil {
-		return err
+	result := collection.FindOneAndDelete(context.TODO(), bson.M{"_id": id})
+
+	if result.Err() != nil {
+		if result.Err() == mongo.ErrNoDocuments {
+			return er.ErrNotFound
+		}
+		return result.Err()
 	}
 	return nil
 }
