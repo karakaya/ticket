@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -30,16 +31,25 @@ func (s service) CreateTicket(ticketRequest request.CreateTicketRequest) (uuid.U
 	ticket.CreatedAt = time.Now()
 	ticket.UpdatedAt = time.Now()
 
-	uid, err := s.repo.Create(ticket)
+	createResponse, err := s.repo.Create(ticket)
 	if err == nil {
 		ticketBytes, _ := ticket.Encoder()
 		go rabbit.Publish(ticketBytes)
 	}
-	return uid, err
+	fmt.Println(createResponse)
+	u, _ := createResponse.(model.Ticket)
+
+	return u.ID, err
 }
 
 func (s service) GetTicket(id uuid.UUID) (model.Ticket, error) {
-	return s.repo.Get(id)
+	ticket, err := s.repo.Get(id)
+	if err != nil {
+		return model.Ticket{}, err
+	}
+	ticketStruct, _ := ticket.(model.Ticket)
+	return ticketStruct, nil
+
 }
 
 func (s service) DeleteTicket(id uuid.UUID) error {

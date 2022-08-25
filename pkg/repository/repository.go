@@ -10,8 +10,8 @@ import (
 )
 
 type Repository interface {
-	Create(ticket model.Ticket) (uuid.UUID, error)
-	Get(id uuid.UUID) (model.Ticket, error)
+	Create(ticket interface{}) (interface{}, error)
+	Get(id uuid.UUID) (interface{}, error)
 	Delete(id uuid.UUID) error
 }
 
@@ -19,7 +19,7 @@ type repository struct {
 	client *mongo.Client
 }
 
-func (r repository) Get(id uuid.UUID) (model.Ticket, error) {
+func (r repository) Get(id uuid.UUID) (interface{}, error) {
 	collection := r.client.Database("ticket").Collection("tickets")
 	var ticket model.Ticket
 	collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&ticket)
@@ -27,13 +27,13 @@ func (r repository) Get(id uuid.UUID) (model.Ticket, error) {
 	return ticket, nil
 }
 
-func (r repository) Create(ticket model.Ticket) (uuid.UUID, error) {
+func (r repository) Create(ticket interface{}) (interface{}, error) {
 	collection := r.client.Database("ticket").Collection("tickets")
 	_, err := collection.InsertOne(context.TODO(), ticket)
 	if err != nil {
 		return uuid.Nil, nil
 	}
-	return ticket.ID, nil
+	return ticket, nil
 }
 func (r repository) Delete(id uuid.UUID) error {
 	collection := r.client.Database("ticket").Collection("tickets")
