@@ -12,7 +12,7 @@ import (
 )
 
 type Message struct {
-	ID        uuid.UUID `json:"id"`
+	ID        uuid.UUID `json:"_id"`
 	Title     string    `json:"title"`
 	Body      string    `json:"body"`
 	Email     string    `json:"email"`

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/karakaya/ticket/pkg/errors"
 	"github.com/karakaya/ticket/pkg/middleware"
 	"github.com/karakaya/ticket/pkg/request"
 	"github.com/karakaya/ticket/pkg/service"
@@ -17,6 +18,7 @@ func RegisterHandlers(r *mux.Router, service service.Service) {
 	r.Use(middleware.ContentTypeApplicationJsonMiddleware)
 	r.HandleFunc("/ticket", res.create).Methods("POST")
 	r.HandleFunc("/ticket/{id}", res.find).Methods("GET")
+	r.HandleFunc("/ticket/{id}", res.delete).Methods("DELETE")
 }
 
 type resource struct {
@@ -46,13 +48,28 @@ func (res resource) find(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	uid, err := uuid.Parse(id)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		errors.JSONHandleError(w, errors.ErrUUDInvalid)
 	}
+
 	ticket, err := res.service.GetTicket(uid)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		errors.JSONHandleError(w, err)
 		return
 	}
 
 	json.NewEncoder(w).Encode(ticket)
+}
+
+func (res resource) delete(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	uid, err := uuid.Parse(id)
+	if err != nil {
+		errors.JSONHandleError(w, errors.ErrUUDInvalid)
+	}
+
+	err = res.service.DeleteTicket(uid)
+	if err != nil {
+		errors.JSONHandleError(w, err)
+	}
+
 }
