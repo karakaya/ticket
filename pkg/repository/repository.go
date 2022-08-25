@@ -20,17 +20,6 @@ type repository struct {
 	client *mongo.Client
 }
 
-func (r repository) Get(id uuid.UUID) (interface{}, error) {
-	collection := r.client.Database("ticket").Collection("tickets")
-	var ticket model.Ticket
-	result := collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&ticket)
-	if result == mongo.ErrNoDocuments {
-		return nil, er.ErrNotFound
-	}
-
-	return ticket, nil
-}
-
 func (r repository) Create(ticket interface{}) (interface{}, error) {
 	collection := r.client.Database("ticket").Collection("tickets")
 	_, err := collection.InsertOne(context.TODO(), ticket)
@@ -39,6 +28,17 @@ func (r repository) Create(ticket interface{}) (interface{}, error) {
 	}
 	return ticket, nil
 }
+
+func (r repository) Get(id uuid.UUID) (interface{}, error) {
+	collection := r.client.Database("ticket").Collection("tickets")
+	var ticket model.Ticket
+	result := collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&ticket)
+	if result == mongo.ErrNoDocuments {
+		return nil, er.ErrNotFound
+	}
+	return ticket, nil
+}
+
 func (r repository) Delete(id uuid.UUID) error {
 	collection := r.client.Database("ticket").Collection("tickets")
 	result := collection.FindOneAndDelete(context.TODO(), bson.M{"_id": id})
