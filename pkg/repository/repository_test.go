@@ -68,6 +68,15 @@ func TestFindTicket(t *testing.T) {
 }
 
 func TestDeleteTicket(t *testing.T) {
+
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 	defer mt.Close()
+
+	mt.Run("success", func(mt *mtest.T) {
+		mt.AddMockResponses(bson.D{{"ok", 1}, {"acknowledged", true}, {"n", 1}})
+		repo := NewRepository(mt.Client)
+
+		err := repo.Delete(uuid.New())
+		assert.Nil(t, err)
+	})
 }
