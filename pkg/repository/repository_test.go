@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/integration/mtest"
 
+	"github.com/karakaya/ticket/pkg/errors"
 	"github.com/karakaya/ticket/pkg/model"
 )
 
@@ -18,7 +19,6 @@ func TestInsertTicket(t *testing.T) {
 	defer mt.Close()
 
 	mt.Run("success", func(mt *mtest.T) {
-		// ticketCollection := mt.Coll
 		id := uuid.New()
 		mt.AddMockResponses(mtest.CreateSuccessResponse())
 
@@ -43,27 +43,29 @@ func TestFindTicket(t *testing.T) {
 	defer mt.Close()
 
 	mt.Run("success", func(mt *mtest.T) {
-
-		expectedTicket := model.Ticket{
+		expectedUser := model.Ticket{
 			ID:    uuid.New(),
 			Title: "ticket title",
-			Email: "john.doe@test.com",
-			Body:  "body title",
+			Email: "email@ticket.com",
+			Body:  "ticket@body",
 		}
 
 		mt.AddMockResponses(mtest.CreateCursorResponse(1, "ticket.tickets", mtest.FirstBatch, bson.D{
-			{"_id", expectedTicket.ID},
-			{"title", expectedTicket.Title},
-			{"email", expectedTicket.Email},
-			{"body", expectedTicket.Body},
+			{Key: "_id", Value: expectedUser.ID},
+			{Key: "title", Value: expectedUser.Title},
+			{Key: "email", Value: expectedUser.Email},
+			{Key: "body", Value: expectedUser.Body},
 		}))
 
 		repo := NewRepository(mt.Client)
 
-		ticketResponse, err := repo.Get(expectedTicket.ID)
-		assert.Nil(t, err)
+		response, err := repo.Get(expectedUser.ID)
+		userResponse, _ := bson.Marshal(response)
+		var ticket model.Ticket
+		bson.Unmarshal(userResponse, &ticket)
 
-		assert.Equal(t, expectedTicket, ticketResponse)
+		assert.Nil(t, err)
+		assert.Equal(t, expectedUser, ticket)
 	})
 }
 
@@ -73,10 +75,13 @@ func TestDeleteTicket(t *testing.T) {
 	defer mt.Close()
 
 	mt.Run("success", func(mt *mtest.T) {
-		mt.AddMockResponses(bson.D{{"ok", 1}, {"acknowledged", true}, {"n", 1}})
+
+		mt.AddMockResponses(bson.D{{Key: "ok", Value: 1}, {Key: "acknowledged", Value: true}, {Key: "n", Value: 1}})
 		repo := NewRepository(mt.Client)
 
+		expected := errors.ErrNotFound
+
 		err := repo.Delete(uuid.New())
-		assert.Nil(t, err)
+		assert.Equal(t, err, expected)
 	})
 }
