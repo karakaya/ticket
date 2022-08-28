@@ -2,12 +2,14 @@ package route
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/karakaya/ticket/pkg/errors"
 	"github.com/karakaya/ticket/pkg/middleware"
 	"github.com/karakaya/ticket/pkg/request"
 	"github.com/karakaya/ticket/pkg/service"
+	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -63,7 +65,10 @@ func (res resource) find(w http.ResponseWriter, r *http.Request) {
 
 func (res resource) getAll(w http.ResponseWriter, r *http.Request) {
 	tickets, err := res.service.GetAllTickets()
+	_, err = bson.Marshal(tickets)
+
 	if err != nil {
+		fmt.Println(err)
 		errors.JSONHandleError(w, err)
 		return
 	}

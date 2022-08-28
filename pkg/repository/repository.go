@@ -12,7 +12,7 @@ import (
 type Repository interface {
 	Create(ticket interface{}) (interface{}, error)
 	Get(id uuid.UUID) (interface{}, error)
-	GetAll() ([]interface{}, error)
+	GetAll() (interface{}, error)
 	Delete(id uuid.UUID) error
 }
 
@@ -40,20 +40,21 @@ func (r repository) Get(id uuid.UUID) (interface{}, error) {
 	return ticket, nil
 }
 
-func (r repository) GetAll() ([]interface{}, error) {
-	result := make([]interface{}, 0)
-	allData, err := r.collection.Find(context.TODO(), bson.D{})
+func (r repository) GetAll() (interface{}, error) {
+	cursor, err := r.collection.Find(context.TODO(), bson.M{})
+
 	if err != nil {
 		return nil, err
 	}
 
-	for allData.Next(context.TODO()) {
-		var element interface{}
-		allData.Decode(&element)
-		result = append(result, element)
+	var tickets bson.A
+	for cursor.Next(context.TODO()) {
+		var ticket bson.M
+		cursor.Decode(&ticket)
+		tickets = append(tickets, ticket)
 	}
-	return result, nil
 
+	return tickets, nil
 }
 
 func (r repository) Delete(id uuid.UUID) error {

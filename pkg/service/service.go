@@ -14,6 +14,7 @@ import (
 type Service interface {
 	CreateTicket(ticketRequest request.CreateTicketRequest) (uuid.UUID, error)
 	GetTicket(id uuid.UUID) (model.Ticket, error)
+	GetAllTickets() (interface{}, error)
 	DeleteTicket(id uuid.UUID) error
 }
 
@@ -51,6 +52,17 @@ func (s service) GetTicket(id uuid.UUID) (model.Ticket, error) {
 	bson.Unmarshal(data, &ticketResponse)
 	return ticketResponse, nil
 
+}
+
+func (s service) GetAllTickets() (interface{}, error) {
+	//TODO solve the bson unmsrahall problem
+	response, err := s.repo.GetAll()
+
+	if err != nil {
+		return []model.Ticket{}, err
+	}
+
+	return response, nil
 }
 
 func (s service) DeleteTicket(id uuid.UUID) error {
