@@ -17,6 +17,7 @@ func RegisterHandlers(r *mux.Router, service service.Service) {
 	res := resource{service}
 	r.Use(middleware.ContentTypeApplicationJsonMiddleware)
 	r.HandleFunc("/ticket", res.create).Methods("POST")
+	r.HandleFunc("/ticket", res.getAll).Methods("GET")
 	r.HandleFunc("/ticket/{id}", res.find).Methods("GET")
 	r.HandleFunc("/ticket/{id}", res.delete).Methods("DELETE")
 }
@@ -58,6 +59,15 @@ func (res resource) find(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(ticket)
+}
+
+func (res resource) getAll(w http.ResponseWriter, r *http.Request) {
+	tickets, err := res.service.GetAllTickets()
+	if err != nil {
+		errors.JSONHandleError(w, err)
+		return
+	}
+	json.NewEncoder(w).Encode(tickets)
 }
 
 func (res resource) delete(w http.ResponseWriter, r *http.Request) {
