@@ -31,7 +31,7 @@ func main() {
 		panic(err)
 	}
 
-	repo := repository.NewRepository(dbc)
+	repo := repository.NewRepository(dbc, dbc.Database("ticket").Collection("tickets"))
 	service := service.NewService(repo)
 
 	route.RegisterHandlers(muxRouter, service)

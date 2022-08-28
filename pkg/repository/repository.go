@@ -12,11 +12,13 @@ import (
 type Repository interface {
 	Create(ticket interface{}) (interface{}, error)
 	Get(id uuid.UUID) (interface{}, error)
+	GetAll() ([]interface{}, error)
 	Delete(id uuid.UUID) error
 }
 
 type repository struct {
-	client *mongo.Client
+	client     *mongo.Client
+	collection *mongo.Collection
 }
 
 func (r repository) Create(ticket interface{}) (interface{}, error) {
@@ -38,6 +40,18 @@ func (r repository) Get(id uuid.UUID) (interface{}, error) {
 	return ticket, nil
 }
 
+func (r repository) GetAll() ([]interface{}, error) {
+	result := make([]interface{}, 0)
+	allData, _ := r.collection.Find(context.TODO(), bson.D{})
+	for allData.Next(context.TODO()) {
+		var element interface{}
+		allData.Decode(&element)
+		result = append(result, element)
+	}
+	return result, nil
+
+}
+
 func (r repository) Delete(id uuid.UUID) error {
 	collection := r.client.Database("ticket").Collection("tickets")
 	result := collection.FindOneAndDelete(context.TODO(), bson.M{"_id": id})
@@ -51,6 +65,6 @@ func (r repository) Delete(id uuid.UUID) error {
 	return nil
 }
 
-func NewRepository(mongoClient *mongo.Client) Repository {
-	return repository{client: mongoClient}
+func NewRepository(mongoClient *mongo.Client, collection *mongo.Collection) Repository {
+	return repository{client: mongoClient, collection: collection}
 }
