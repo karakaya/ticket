@@ -22,8 +22,8 @@ type repository struct {
 }
 
 func (r repository) Create(ticket interface{}) (interface{}, error) {
-	collection := r.client.Database("ticket").Collection("tickets")
-	_, err := collection.InsertOne(context.TODO(), ticket)
+
+	_, err := r.collection.InsertOne(context.TODO(), ticket)
 	if err != nil {
 		return uuid.Nil, nil
 	}
@@ -31,9 +31,9 @@ func (r repository) Create(ticket interface{}) (interface{}, error) {
 }
 
 func (r repository) Get(id uuid.UUID) (interface{}, error) {
-	collection := r.client.Database("ticket").Collection("tickets")
+
 	var ticket interface{}
-	result := collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&ticket)
+	result := r.collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&ticket)
 	if result == mongo.ErrNoDocuments {
 		return nil, er.ErrNotFound
 	}
@@ -42,7 +42,11 @@ func (r repository) Get(id uuid.UUID) (interface{}, error) {
 
 func (r repository) GetAll() ([]interface{}, error) {
 	result := make([]interface{}, 0)
-	allData, _ := r.collection.Find(context.TODO(), bson.D{})
+	allData, err := r.collection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		return nil, err
+	}
+
 	for allData.Next(context.TODO()) {
 		var element interface{}
 		allData.Decode(&element)
@@ -53,8 +57,8 @@ func (r repository) GetAll() ([]interface{}, error) {
 }
 
 func (r repository) Delete(id uuid.UUID) error {
-	collection := r.client.Database("ticket").Collection("tickets")
-	result := collection.FindOneAndDelete(context.TODO(), bson.M{"_id": id})
+
+	result := r.collection.FindOneAndDelete(context.TODO(), bson.M{"_id": id})
 
 	if result.Err() != nil {
 		if result.Err() == mongo.ErrNoDocuments {
