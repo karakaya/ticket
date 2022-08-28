@@ -47,14 +47,14 @@ func (r repository) GetAll() (interface{}, error) {
 		return nil, err
 	}
 
-	var tickets bson.A
+	var dataArr bson.A
 	for cursor.Next(context.TODO()) {
-		var ticket bson.M
-		cursor.Decode(&ticket)
-		tickets = append(tickets, ticket)
+		var data bson.M
+		cursor.Decode(&data)
+		dataArr = append(dataArr, data)
 	}
 
-	return tickets, nil
+	return dataArr, nil
 }
 
 func (r repository) Delete(id uuid.UUID) error {
