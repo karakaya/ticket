@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/integration/mtest"
 
 	"github.com/karakaya/ticket/pkg/errors"
@@ -21,8 +22,8 @@ func TestInsertTicket(t *testing.T) {
 	mt.Run("success", func(mt *mtest.T) {
 		id := uuid.New()
 		mt.AddMockResponses(mtest.CreateSuccessResponse())
-
-		repo := NewRepository(mt.Client)
+		mt.Coll = &mongo.Collection{}
+		repo := NewRepository(mt.Client, mt.Coll)
 
 		_, err := repo.Create(model.Ticket{
 			ID:        id,
@@ -57,7 +58,7 @@ func TestFindTicket(t *testing.T) {
 			{Key: "body", Value: expectedUser.Body},
 		}))
 
-		repo := NewRepository(mt.Client)
+		repo := NewRepository(mt.Client, mt.Coll)
 
 		response, err := repo.Get(expectedUser.ID)
 		userResponse, _ := bson.Marshal(response)
@@ -77,7 +78,7 @@ func TestDeleteTicket(t *testing.T) {
 	mt.Run("success", func(mt *mtest.T) {
 
 		mt.AddMockResponses(bson.D{{Key: "ok", Value: 1}, {Key: "acknowledged", Value: true}, {Key: "n", Value: 1}})
-		repo := NewRepository(mt.Client)
+		repo := NewRepository(mt.Client, mt.Coll)
 
 		expected := errors.ErrNotFound
 
