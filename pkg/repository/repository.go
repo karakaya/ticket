@@ -10,7 +10,7 @@ import (
 )
 
 type Repository interface {
-	Create(ticket interface{}) (interface{}, error)
+	Create(instance interface{}) (interface{}, error)
 	Get(id uuid.UUID) (interface{}, error)
 	GetAll() (interface{}, error)
 	Delete(id uuid.UUID) error
@@ -21,23 +21,24 @@ type repository struct {
 	collection *mongo.Collection
 }
 
-func (r repository) Create(ticket interface{}) (interface{}, error) {
+func (r repository) Create(instance interface{}) (interface{}, error) {
 
-	_, err := r.collection.InsertOne(context.TODO(), ticket)
+	_, err := r.collection.InsertOne(context.TODO(), instance)
 	if err != nil {
 		return uuid.Nil, nil
 	}
-	return ticket, nil
+
+	return instance, nil
 }
 
 func (r repository) Get(id uuid.UUID) (interface{}, error) {
 
-	var ticket interface{}
-	result := r.collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&ticket)
+	var instance interface{}
+	result := r.collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&instance)
 	if result == mongo.ErrNoDocuments {
 		return nil, er.ErrNotFound
 	}
-	return ticket, nil
+	return instance, nil
 }
 
 func (r repository) GetAll() (interface{}, error) {

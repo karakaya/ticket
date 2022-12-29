@@ -30,11 +30,13 @@ type resource struct {
 
 func (res resource) create(w http.ResponseWriter, r *http.Request) {
 	var ticketRequest request.CreateTicketRequest
+
 	err := json.NewDecoder(r.Body).Decode(&ticketRequest)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
 	uid, err := res.service.CreateTicket(ticketRequest)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -44,7 +46,6 @@ func (res resource) create(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(response)
 	w.WriteHeader(http.StatusCreated)
-
 }
 
 func (res resource) find(w http.ResponseWriter, r *http.Request) {
@@ -86,5 +87,4 @@ func (res resource) delete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		errors.JSONHandleError(w, err)
 	}
-
 }
